@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <link rel="stylesheet" href="/static/css/convert.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Online Currency Converter</h1>
+        <form id="convert-form">
+            <div class="form-group">
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" placeholder="Enter amount" required>
+            </div>
+            <div class="form-group">
+                <label for="from_currency">From:</label>
+                <select id="from_currency" name="from_currency" required>
+                    {% for currency in currencies %}
+                        <option value="{{ currency }}">{{ currency }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="to_currency">To:</label>
+                <select id="to_currency" name="to_currency" required>
+                    {% for currency in currencies %}
+                        <option value="{{ currency }}">{{ currency }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit">Convert</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('convert-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch('/convert', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById('result').textContent = 
+                    `Converted Value: ${result.converted_value} (Exchange Rate: ${result.exchange_rate})`;
+            } else {
+                document.getElementById('result').textContent = `Error: ${result.error}`;
+            }
+        });
+    </script>
+</body>
+</html>
